@@ -44,7 +44,7 @@ Undo and restore-on-drag use different snapshots during a drag. Undo remembers t
 
 ## Settings and lifecycle
 
-`enable()` creates settings, signals, the preview actor, shortcuts, and optionally the panel indicator. It temporarily disables GNOME's built-in edge tiling while Better Tiles snapping is enabled, recording the prior user setting so it can restore the value or unset the override on disable. Settings changes rebuild affected bindings or UI and cancel an in-progress drag when its snap rules change.
+`enable()` creates settings, signals, the preview actor, shortcuts, and optionally the panel indicator. It temporarily disables GNOME's built-in edge tiling while Better Tiles snapping is enabled. A private GSettings key records whether GNOME's prior value was explicit or the default, so disable can restore it after a normal stop or a later restart. Settings changes rebuild affected bindings or UI and cancel an in-progress drag when its snap rules change.
 
 `disable()` stops drag and idle sources, disconnects signals, removes shortcuts and UI actors, clears window state, and restores GNOME edge tiling when this extension had disabled it. Keep every new signal, timer, actor, or binding paired with cleanup here. Do not retain a `Meta.Window` after its `unmanaged` signal.
 
@@ -52,6 +52,6 @@ Shortcut registration checks GNOME's native bindings and skips a conflicting Bet
 
 ## Build and validation
 
-`npm run build` compiles TypeScript to `dist/`, copies metadata, CSS, and schemas, then compiles the GSettings schema. `npm test` runs the pure geometry and window-state tests against compiled code. `npm run typecheck` checks TypeScript without emitting files.
+`npm run build` removes the old `dist/`, compiles TypeScript, copies metadata, CSS, license, and schemas, then compiles the GSettings schema. `npm run pack:extension` uses GNOME's packer to include every compiled helper module in the release ZIP. `npm test` runs the pure geometry and window-state tests against compiled code. `npm run typecheck` checks TypeScript without emitting files.
 
 `npm run test:gnome` launches an isolated headless GNOME Shell with private D-Bus, settings, and two virtual monitors. Its harness exercises real windows, shortcuts, drag behavior, preferences, and disable/re-enable cleanup. It needs an environment that permits local D-Bus sockets and a headless GNOME Shell.

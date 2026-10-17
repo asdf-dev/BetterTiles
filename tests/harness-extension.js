@@ -15,10 +15,10 @@ export default class Harness extends Extension {
     enable() {this.start = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1800, () => {this.start=0; this.run(); return GLib.SOURCE_REMOVE;});}
     disable() {if(this.start) GLib.Source.remove(this.start); this.process?.force_exit();}
     async run() {
-        const root=GLib.getenv('BETTER_TILES_TEST_ROOT'), passed=[];
+        const root=GLib.getenv('BETTER_TILES_TEST_ROOT'), uuid=GLib.getenv('BETTER_TILES_UUID'), passed=[];
         try {
             Main.overview.hide();
-            const target=Main.extensionManager.lookup('better-tiles@local');
+            const target=Main.extensionManager.lookup(uuid);
             check(target?.stateObj, `Extension failed to load: ${JSON.stringify(target?.errors)}`);
             const ext=target.stateObj;
             const geometry=await import(`file://${root}/dist/geometry.js`);
@@ -27,8 +27,8 @@ export default class Harness extends Extension {
             check(!new Gio.Settings({schema_id:'org.gnome.mutter'}).get_boolean('edge-tiling'),'Native snapping not disabled');
             passed.push('Extension loads on GNOME 51; takes ownership of built-in snapping');
             const menuItems=()=>ext.indicator.menu._getMenuItems().map(item=>item.label?.text).filter(Boolean);
-            check(JSON.stringify(menuItems())===JSON.stringify(['Center','Next Display','Previous Display','Preferences…','Quit']),`Unexpected panel menu: ${menuItems()}`);
-            passed.push('Panel menu contains only the requested actions, preferences, and Quit');
+            check(JSON.stringify(menuItems())===JSON.stringify(['Center','Next Display','Previous Display','Preferences…']),`Unexpected panel menu: ${menuItems()}`);
+            passed.push('Panel menu contains the window actions and preferences');
             this.process=Gio.Subprocess.new(['gjs','-m',`${root}/tests/test-window.js`], Gio.SubprocessFlags.NONE);
             let window;
             for(let i=0;i<40;i++){await pause(100); window=global.get_window_actors().map(a=>a.meta_window).find(w=>w.get_title()==='Better Tiles Test Window'); if(window && window.get_frame_rect().width > 100)break;}
@@ -147,9 +147,14 @@ export default class Harness extends Extension {
             ext.enable(); await pause(100);
             ext.disable(); await pause(100);
             check(nativeSettings.get_user_value('edge-tiling')===null,'Native snapping left an explicit setting after disable');
+            ext.getSettings().set_string('native-edge-tiling-prior','default');
+            nativeSettings.set_boolean('edge-tiling',false);
+            ext.enable(); await pause(100);
+            ext.disable(); await pause(100);
+            check(nativeSettings.get_boolean('edge-tiling')&&nativeSettings.get_user_value('edge-tiling')===null,'Native snapping did not recover after interrupted shutdown');
             ext.enable(); await pause(150);
             check(ext.bindings.length===18,'Shortcuts not re-registered');
-            passed.push('Disable/re-enable removes resources and restores native snapping without changing its prior setting');
+            passed.push('Disable/re-enable removes resources and restores native snapping, including after interrupted shutdown');
             this.process.force_exit();
             this.process=Gio.Subprocess.new(['gjs','-m',`${root}/tests/test-preferences.js`], Gio.SubprocessFlags.NONE);
             await pause(1500);
@@ -163,12 +168,6 @@ export default class Harness extends Extension {
                 const r=rect(prefsWindow), stream=Gio.File.new_for_path(`${root}/.test-session/preferences-${page}.png`).replace(null,false,Gio.FileCreateFlags.NONE,null);
                 await new Promise(resolve=>{const shot=new Shell.Screenshot(); shot.screenshot_area(r.x,r.y,r.width,r.height,stream,(_s,result)=>{shot.screenshot_area_finish(result);stream.close(null);resolve();});});
             }
-
-            const quit=ext.indicator.menu._getMenuItems().find(item=>item.label?.text==='Quit');
-            quit.emit('activate',null); await pause(200);
-            check(!new Gio.Settings({schema_id:'org.gnome.shell'}).get_strv('enabled-extensions').includes('better-tiles@local'),'Quit left Better Tiles enabled');
-            check(!ext.active&&!ext.indicator&&ext.bindings.length===0,'Quit did not clean up Better Tiles');
-            passed.push('Quit disables Better Tiles and persists the choice');
 
             GLib.file_set_contents(`${root}/.test-session/result.json`,JSON.stringify({ok:true,passed}));
         } catch(error){

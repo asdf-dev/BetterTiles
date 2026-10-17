@@ -6,9 +6,12 @@ from pathlib import Path
 import shutil
 import signal
 import subprocess
+import sys
 import time
+from zipfile import ZipFile
 
 root = Path(__file__).resolve().parent.parent
+uuid = json.loads((root / 'metadata.json').read_text())['uuid']
 session = root / '.test-session'
 if session.exists():
     shutil.rmtree(session)
@@ -19,18 +22,23 @@ for key in ('DISPLAY', 'WAYLAND_DISPLAY', 'DBUS_SESSION_BUS_ADDRESS', 'SESSION_M
     env.pop(key, None)
 env.update(XDG_DATA_HOME=str(session / 'data'), XDG_CONFIG_HOME=str(session / 'config'),
            XDG_CACHE_HOME=str(session / 'cache'), XDG_RUNTIME_DIR=str(session / 'runtime'),
-           GSETTINGS_BACKEND='keyfile', BETTER_TILES_TEST_ROOT=str(root),
+           GSETTINGS_BACKEND='keyfile', BETTER_TILES_TEST_ROOT=str(root), BETTER_TILES_UUID=uuid,
            XDG_SESSION_TYPE='wayland', XDG_CURRENT_DESKTOP='GNOME', GTK_A11Y='none', GSK_RENDERER='cairo', GDK_BACKEND='wayland')
 bus = subprocess.check_output(['dbus-daemon', '--session', '--fork', '--print-address=1', '--print-pid=1'], env=env, text=True).splitlines()
 env['DBUS_SESSION_BUS_ADDRESS'] = bus[0]
 extensions = session / 'data/gnome-shell/extensions'
-shutil.copytree(root / 'dist', extensions / 'better-tiles@local')
+if len(sys.argv) > 1:
+    with ZipFile(sys.argv[1]) as package:
+        package.extractall(extensions / uuid)
+    subprocess.run(['glib-compile-schemas', '--strict', str(extensions / uuid / 'schemas')], check=True)
+else:
+    shutil.copytree(root / 'dist', extensions / uuid)
 harness = extensions / 'better-tiles-test@local'
 harness.mkdir()
 (harness / 'metadata.json').write_text(json.dumps({'uuid':'better-tiles-test@local','name':'Better Tiles integration harness','description':'Private integration test','shell-version':['51']}))
 shutil.copy(root / 'tests/harness-extension.js', harness / 'extension.js')
 for schema, key, value in [
-    ('org.gnome.shell','enabled-extensions',"['better-tiles@local', 'better-tiles-test@local']"),
+    ('org.gnome.shell','enabled-extensions',str([uuid, 'better-tiles-test@local'])),
     ('org.gnome.shell','disable-user-extensions','false'),
     ('org.gnome.shell','welcome-dialog-last-shown-version',"'999'"),
     ('org.gnome.desktop.interface','enable-animations','false'),

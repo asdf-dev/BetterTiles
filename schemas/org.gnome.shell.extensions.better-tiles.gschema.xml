@@ -5,6 +5,7 @@
     <key name="animations" type="b"><default>true</default><summary>Animate previews</summary></key>
     <key name="hotkeys-enabled" type="b"><default>true</default><summary>Enable shortcuts</summary></key>
     <key name="snap-enabled" type="b"><default>true</default><summary>Snap to screen edges</summary></key>
+    <key name="native-edge-tiling-prior" type="s"><default>'none'</default><summary>Previous GNOME edge tiling setting for crash recovery</summary><choices><choice value="none"/><choice value="default"/><choice value="enabled"/></choices></key>
     <key name="restore-on-drag" type="b"><default>true</default><summary>Restore size when dragging</summary></key>
     <key name="pad-maximized" type="b"><default>false</default><summary>Apply padding to maximized windows</summary></key>
     <key name="padding" type="i"><default>0</default><summary>Window padding</summary><range min="0" max="64"/></key>

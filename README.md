@@ -14,9 +14,10 @@ This project was coded with the help of Codex.
 
 ## Requirements
 
-This source build targets **GNOME Shell 51 on Wayland**. Building it requires Node.js and npm, GJS, and GLib's `glib-compile-schemas`. The preferences UI uses GTK4 and libadwaita. The extension metadata advertises GNOME Shell 51 only.
+This source build targets **GNOME Shell 51 on Wayland**. Building it requires Node.js and npm, GJS, and GLib's `glib-compile-schemas`. Packaging also requires `gnome-extensions`. The preferences UI uses GTK4 and libadwaita. The extension metadata advertises GNOME Shell 51 only.
 
-There is no packaged release or extensions.gnome.org listing yet. Installation is currently from source using the development extension ID `better-tiles@local`.
+There is no extensions.gnome.org listing yet. The extension ID is `better-tiles@asdf-dev.github.io`.
+If you installed the earlier `better-tiles@local` development build, disable and remove it before enabling this ID so the two copies do not compete for snapping and shortcuts.
 
 ## Install from source
 
@@ -27,21 +28,21 @@ npm ci
 npm run install:local
 ```
 
-The installer builds the extension and copies it to `~/.local/share/gnome-shell/extensions/better-tiles@local` or the equivalent path under `XDG_DATA_HOME`. It does not enable the extension. Log out and back in if GNOME has not discovered it, then enable **Better Tiles** in the Extensions app or run:
+The installer builds the extension and copies it to `~/.local/share/gnome-shell/extensions/better-tiles@asdf-dev.github.io` or the equivalent path under `XDG_DATA_HOME`. It does not enable the extension. Log out and back in if GNOME has not discovered it, then enable **Better Tiles** in the Extensions app or run:
 
 ```sh
-gnome-extensions enable better-tiles@local
+gnome-extensions enable better-tiles@asdf-dev.github.io
 ```
 
 Open its settings from the Extensions app or with:
 
 ```sh
-gnome-extensions prefs better-tiles@local
+gnome-extensions prefs better-tiles@asdf-dev.github.io
 ```
 
 You can preview the preferences before installing with `npm run prefs`. After installing a new build on Wayland, log out and back in to load the replacement code.
 
-If you use another tiling extension, disable its edge snapping to avoid competing drag behavior. While Better Tiles snapping is enabled, it temporarily turns off GNOME's built-in edge tiling and restores it when Better Tiles is disabled.
+If you use another tiling extension, disable its edge snapping to avoid competing drag behavior. While Better Tiles snapping is enabled, it turns off GNOME's built-in edge tiling and restores the previous setting when Better Tiles is disabled. If GNOME Shell stops unexpectedly, Better Tiles restores the setting the next time it starts and is disabled. Until then, GNOME's built-in edge tiling may remain off.
 
 ## Use Better Tiles
 
@@ -67,7 +68,7 @@ All 18 shortcuts can be changed or cleared on the **Hotkeys** preferences page. 
 
 ### Panel menu and preferences
 
-The panel menu offers **Center**, **Next Display**, **Previous Display**, **Preferences**, and **Quit**. Quit disables Better Tiles until you enable it again. You can hide the panel menu in preferences; settings remain available in the Extensions app.
+The panel menu offers **Center**, **Next Display**, **Previous Display**, and **Preferences**. You can hide the panel menu in preferences; settings remain available in the Extensions app.
 
 The **General** page controls the menu, preview animation, and padding. **Hotkeys** records and resets shortcuts. **Snap to Edges** controls the eight edge actions, snap zone thickness, activation delay, thirds modifier, and restore-on-drag behavior.
 
@@ -80,7 +81,7 @@ The **General** page controls the menu, preview animation, and padding. **Hotkey
 - Fixed-size windows can be centered or moved between displays; actions that require resizing are skipped. Applications still control their minimum window size.
 - Other extensions and application shortcuts can still conflict with Better Tiles and may need manual adjustment.
 
-To stop using the extension, disable it in the Extensions app or run `gnome-extensions disable better-tiles@local`. The local installer does not manage removal; after disabling, remove its directory from your user GNOME extensions folder if you want to uninstall it.
+To stop using the extension, disable it in the Extensions app or run `gnome-extensions disable better-tiles@asdf-dev.github.io`. The local installer does not manage removal; after disabling, remove its directory from your user GNOME extensions folder if you want to uninstall it.
 
 ## Development and contributing
 
@@ -90,10 +91,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, bug reports, and pull requests
 npm run typecheck
 npm test
 npm run test:gnome
+npm run test:package
 ```
 
-The GNOME integration test runs an isolated headless Shell with private D-Bus and two virtual monitors. It does not change your current desktop's extension state. It needs a host that allows local D-Bus sockets. Test artifacts are written to `.test-session/` and replaced on the next run.
+The GNOME integration tests run an isolated headless Shell with private D-Bus and two virtual monitors. `test:package` extracts the upload ZIP and compiles its schema before running the same checks. These tests do not change your current desktop's extension state. They need a host that allows local D-Bus sockets. Test artifacts are written to `.test-session/` and replaced on the next run.
 
-Current manual coverage gaps include fractional scaling, physical display removal, non-US keyboard layouts, and coexistence with other tiling extensions. The [development plan](plan.md) has the broader acceptance checklist.
+Current manual coverage gaps include fractional scaling, physical display removal, non-US keyboard layouts, and coexistence with other tiling extensions.
 
-Before a public release, the project needs a license, a public extension ID, and a distribution process. The source currently uses `better-tiles@local` and includes no update downloader.
+## Package for review
+
+Run `npm run pack:extension` to create `better-tiles@asdf-dev.github.io.shell-extension.zip` from a clean build. The package includes the compiled JavaScript modules, preferences, stylesheet, schema, metadata, and license. Run `npm run test:package`, then install that ZIP in a GNOME 51 desktop with `gnome-extensions install --force better-tiles@asdf-dev.github.io.shell-extension.zip` before uploading it to extensions.gnome.org. The extension does not download updates itself.
+
+Better Tiles is licensed under [GPL-3.0-or-later](LICENSE).

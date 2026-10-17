@@ -21,8 +21,6 @@ interface Drag {
 export default class BetterTiles extends Extension {
     private settings?: Gio.Settings;
     private nativeSettings?: Gio.Settings;
-    private restoreNative = false;
-    private previousNativeValue?: GLib.Variant | null;
     private nativeSignal = 0;
     private settingsSignal = 0;
     private signals: [GObjectLike, number][] = [];
@@ -40,7 +38,8 @@ export default class BetterTiles extends Extension {
         this.settings = this.getSettings();
         this.nativeSettings = new Gio.Settings({schema_id: 'org.gnome.mutter'});
         this.nativeSignal = this.nativeSettings.connect('changed::edge-tiling', () => {
-            if (this.nativeSettings?.get_boolean('edge-tiling')) this.restoreNative = false;
+            if (this.nativeSettings?.get_boolean('edge-tiling'))
+                this.settings?.set_string('native-edge-tiling-prior', 'none');
         });
         this.preview = new St.Widget({style_class: 'better-tiles-preview', reactive: false, visible: false});
         Main.layoutManager.addChrome(this.preview);
@@ -106,22 +105,20 @@ export default class BetterTiles extends Extension {
     private configureNativeSnapping(): void {
         if (this.settings?.get_boolean('snap-enabled')) {
             if (this.nativeSettings?.get_boolean('edge-tiling')) {
-                this.previousNativeValue = this.nativeSettings.get_user_value('edge-tiling');
-                this.restoreNative = true;
+                const prior = this.nativeSettings.get_user_value('edge-tiling') ? 'enabled' : 'default';
+                this.settings.set_string('native-edge-tiling-prior', prior);
                 this.nativeSettings.set_boolean('edge-tiling', false);
             }
         } else this.releaseNativeSnapping();
     }
 
     private releaseNativeSnapping(): void {
-        if (this.restoreNative && !this.nativeSettings?.get_boolean('edge-tiling')) {
-            if (this.previousNativeValue)
-                this.nativeSettings?.set_value('edge-tiling', this.previousNativeValue);
-            else
-                this.nativeSettings?.reset('edge-tiling');
+        const prior = this.settings?.get_string('native-edge-tiling-prior');
+        if (prior && prior !== 'none' && !this.nativeSettings?.get_boolean('edge-tiling')) {
+            if (prior === 'enabled') this.nativeSettings?.set_boolean('edge-tiling', true);
+            else this.nativeSettings?.reset('edge-tiling');
         }
-        this.restoreNative = false;
-        this.previousNativeValue = undefined;
+        this.settings?.set_string('native-edge-tiling-prior', 'none');
     }
 
     private bindShortcuts(): void {
@@ -163,11 +160,6 @@ export default class BetterTiles extends Extension {
         }
         menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         menu.addAction('Preferences…', () => this.openPreferences());
-        menu.addAction('Quit', () => {
-            const shellSettings = new Gio.Settings({schema_id: 'org.gnome.shell'});
-            shellSettings.set_strv('enabled-extensions',
-                shellSettings.get_strv('enabled-extensions').filter(uuid => uuid !== this.uuid));
-        });
         Main.panel.addToStatusArea(this.uuid, button);
         this.indicator = button;
     }
