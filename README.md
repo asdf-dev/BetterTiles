@@ -65,21 +65,17 @@ If DevKit was already running when you installed or rebuilt Better Tiles, close 
 
 ## Walkthrough
 
-1. **Open the panel menu** to center a window, move it to another display, or open **Preferences**. Preferences are also available from the Extensions app.
-
-   ![Better Tiles panel menu with Center, display movement, and Preferences actions](docs/screenshots/dropdown-view.png)
-
-2. **Set up General preferences.** Choose whether to show the panel menu and animate snap previews, then set the spacing around tiled windows.
+1. **Set up General preferences.** Open Better Tiles settings from the Extensions app, then choose whether to show the panel menu and animate snap previews. Set the spacing around tiled windows here too.
 
    ![Better Tiles General preferences showing panel menu, animation, and window spacing controls](docs/screenshots/general-tab.png)
+
+2. **Customize keyboard shortcuts** on **Hotkeys**. Select an action to record a combination, or press Backspace to clear it. This screenshot shows a custom setup with shortcuts cleared; the shipped defaults are listed below.
+
+   ![Better Tiles Hotkeys preferences showing actions with cleared shortcuts](docs/screenshots/hotkey-tab.png)
 
 3. **Choose what each screen edge does** on **Snap to Edges**. The image shows one customized layout; the default edge actions are listed below. Drag a window to an enabled edge, wait for the preview, and release to place it.
 
    ![Better Tiles Snap to Edges preferences with a customized edge layout](docs/screenshots/snap-to-edges-tab.png)
-
-4. **Customize keyboard shortcuts** on **Hotkeys**. Select an action to record a combination, or press Backspace to clear it. This screenshot shows a custom setup with shortcuts cleared; the shipped defaults are listed below.
-
-   ![Better Tiles Hotkeys preferences showing actions with cleared shortcuts](docs/screenshots/hotkey-tab.png)
 
 ## Use Better Tiles
 
@@ -106,6 +102,8 @@ All 18 shortcuts can be changed or cleared on the **Hotkeys** preferences page. 
 ### Panel menu and preferences
 
 The panel menu offers **Center**, **Next Display**, **Previous Display**, and **Preferences**. You can hide the panel menu in preferences; settings remain available in the Extensions app.
+
+![Better Tiles panel menu with Center, display movement, and Preferences actions](docs/screenshots/dropdown-view.png)
 
 The **General** page controls the menu, preview animation, and padding. **Hotkeys** records and resets shortcuts. **Snap to Edges** controls the eight edge actions, snap zone thickness, activation delay, thirds modifier, and restore-on-drag behavior.
 
