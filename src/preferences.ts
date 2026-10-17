@@ -30,7 +30,7 @@ export function buildPreferences(window: Adw.PreferencesWindow, settings: Gio.Se
     const general = page('General', 'preferences-system-symbolic');
     const appearance = group(general, 'Make room for your windows', 'Arrange windows with shortcuts, the panel menu, or a drag to the screen edge.');
     toggle(appearance, 'show-indicator', 'Show panel menu', 'Keep window actions and preferences within reach.');
-    toggle(appearance, 'animations', 'Animate snap previews', 'Follow GNOME’s animation settings.');
+    toggle(appearance, 'animations', 'Animate snap previews', 'Fade the snap preview into view.');
     const spacing = group(general, 'Window spacing');
     spin(spacing, 'padding', 'Padding', 'Logical pixels around windows and between adjacent tiles.', 64);
     toggle(spacing, 'pad-maximized', 'Apply padding when maximizing', 'Fill the work area with padding instead of entering the maximized state.');
