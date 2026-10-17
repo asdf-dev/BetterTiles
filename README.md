@@ -1,6 +1,6 @@
 # Better Tiles
 
-Better Tiles arranges application windows in GNOME Shell 51 on Wayland. Use keyboard shortcuts, drag a window to a screen edge, or choose an action from a small panel menu. It is inspired by Tiles, but is currently a local development build rather than a feature-for-feature replacement.
+Better Tiles arranges application windows in GNOME Shell 51 on Wayland. Use keyboard shortcuts, drag a window to a screen edge, or choose an action from a small panel menu.
 
 This project was coded with the help of Codex.
 
@@ -43,6 +43,39 @@ gnome-extensions prefs better-tiles@asdf-dev.github.io
 You can preview the preferences before installing with `npm run prefs`. After installing a new build on Wayland, log out and back in to load the replacement code.
 
 If you use another tiling extension, disable its edge snapping to avoid competing drag behavior. While Better Tiles snapping is enabled, it turns off GNOME's built-in edge tiling and restores the previous setting when Better Tiles is disabled. If GNOME Shell stops unexpectedly, Better Tiles restores the setting the next time it starts and is disabled. Until then, GNOME's built-in edge tiling may remain off.
+
+## Try it in GNOME DevKit
+
+On a GNOME 51 Wayland desktop, install the extension before starting the nested Shell:
+
+```sh
+npm ci
+npm run install:local
+dbus-run-session -- gnome-shell --devkit --wayland
+```
+
+Open a terminal **inside the DevKit window**, then enable Better Tiles and open its preferences:
+
+```sh
+gnome-extensions enable better-tiles@asdf-dev.github.io
+gnome-extensions prefs better-tiles@asdf-dev.github.io
+```
+
+If DevKit was already running when you installed or rebuilt Better Tiles, close and start it again so it loads the new code. DevKit uses your user extension directory, so the local installation is also visible to your normal GNOME session. Some distributions require a separate `mutter-devkit` package; see the [GNOME extension development guide](https://gjs.guide/extensions/development/creating.html).
+
+## Walkthrough
+
+1. **Open the panel menu** to center a window, move it to another display, or open **Preferences**. Preferences are also available from the Extensions app.
+
+   ![Better Tiles panel menu with Center, display movement, and Preferences actions](docs/screenshots/dropdown-view.png)
+
+2. **Set up General preferences.** Choose whether to show the panel menu and animate snap previews, then set the spacing around tiled windows.
+
+   ![Better Tiles General preferences showing panel menu, animation, and window spacing controls](docs/screenshots/general-tab.png)
+
+3. **Choose what each screen edge does** on **Snap to Edges**. The image shows one customized layout; the default edge actions are listed below. Drag a window to an enabled edge, wait for the preview, and release to place it.
+
+   ![Better Tiles Snap to Edges preferences with a customized edge layout](docs/screenshots/snap-to-edges-tab.png)
 
 ## Use Better Tiles
 
