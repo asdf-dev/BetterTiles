@@ -1,0 +1,50 @@
+node_modules/
+dist/
+.test-session/
+.DS_Store
+*.zip
+
+# Local credentials and environment overrides
+.aws/
+.env
+.env.*
+!.env.example
+
+# Editor and operating system files
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+
+# Logs, coverage, and analysis output
+*.log
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Local AI assistant state and configuration
+.agents/
+.claude/
+.codex/
+.cursor/
+.continue/
+.windsurf/
+.gemini/
+.opencode/
+.aider*
+
+# Assistant instruction files
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.cursorrules
+.cursorignore
+.windsurfrules
+.github/copilot-instructions.md
