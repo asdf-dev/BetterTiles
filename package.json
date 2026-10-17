@@ -4,7 +4,7 @@
   "private": true,
   "license": "GPL-3.0-or-later",
   "type": "module",
-  "description": "Tiles-inspired window management for GNOME 51",
+  "description": "Tiles-inspired window management for GNOME 50",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "prebuild": "node scripts/clean.mjs",

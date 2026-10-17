@@ -10,7 +10,7 @@ When reporting a bug, include your GNOME Shell version, whether the session uses
 
 ## Local setup
 
-Development targets GNOME Shell 51. You need Node.js and npm, TypeScript dependencies from `npm ci`, GJS, and `glib-compile-schemas`. To try the extension locally, you also need a GNOME 51 session.
+Development targets GNOME Shell 50. You need Node.js and npm, TypeScript dependencies from `npm ci`, GJS, and `glib-compile-schemas`. To try the extension locally, you also need a GNOME 50 session.
 
 ```sh
 npm ci
@@ -36,4 +36,4 @@ npm test
 npm run test:gnome
 ```
 
-The GNOME integration test starts a private headless Shell, D-Bus session, settings store, and two virtual monitors. It requires a host that permits local D-Bus sockets and headless GNOME Shell. If you cannot run it, say so in your pull request and include the error. For changes to dragging, monitor handling, or preferences, also test in a GNOME 51 session when available and describe what you checked.
+The GNOME integration test starts a private headless Shell, D-Bus session, settings store, and two virtual monitors. It requires a host that permits local D-Bus sockets and headless GNOME Shell 50. If you cannot run it, say so in your pull request and include the error. For changes to dragging, monitor handling, or preferences, also test in a GNOME 50 session when available and describe what you checked.

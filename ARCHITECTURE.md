@@ -1,6 +1,6 @@
 # Architecture
 
-Better Tiles is a GNOME Shell 51 extension. Shell loads the compiled `dist/extension.js` module; GNOME's preferences process loads `dist/prefs.js` separately. Both use the same GSettings schema, so a preference change reaches the running extension through settings signals.
+Better Tiles is a GNOME Shell 50 extension. Shell loads the compiled `dist/extension.js` module; GNOME's preferences process loads `dist/prefs.js` separately. Both use the same GSettings schema, so a preference change reaches the running extension through settings signals.
 
 ## Module map
 

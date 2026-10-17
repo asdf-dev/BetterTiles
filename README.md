@@ -1,6 +1,6 @@
 # Better Tiles
 
-Better Tiles arranges application windows in GNOME Shell 51 on Wayland. Use keyboard shortcuts, drag a window to a screen edge, or choose an action from a small panel menu.
+Better Tiles arranges application windows in GNOME Shell 50 on Wayland. Use keyboard shortcuts, drag a window to a screen edge, or choose an action from a small panel menu.
 
 This project was coded with the help of Codex.
 
@@ -14,7 +14,7 @@ This project was coded with the help of Codex.
 
 ## Requirements
 
-This source build targets **GNOME Shell 51 on Wayland**. Building it requires Node.js and npm, GJS, and GLib's `glib-compile-schemas`. Packaging also requires `gnome-extensions`. The preferences UI uses GTK4 and libadwaita. The extension metadata advertises GNOME Shell 51 only.
+This source build targets **GNOME Shell 50 on Wayland**. Building it requires Node.js and npm, GJS, and GLib's `glib-compile-schemas`. Packaging also requires `gnome-extensions`. The preferences UI uses GTK4 and libadwaita. The extension metadata advertises GNOME Shell 50 only. The [main branch](https://github.com/asdf-dev/BetterTiles) targets GNOME Shell 51.
 
 There is no extensions.gnome.org listing yet. The extension ID is `better-tiles@asdf-dev.github.io`.
 If you installed the earlier `better-tiles@local` development build, disable and remove it before enabling this ID so the two copies do not compete for snapping and shortcuts.
@@ -46,7 +46,7 @@ If you use another tiling extension, disable its edge snapping to avoid competin
 
 ## Try it in GNOME DevKit
 
-On a GNOME 51 Wayland desktop, install the extension before starting the nested Shell:
+On a GNOME 50 Wayland desktop, install the extension before starting the nested Shell:
 
 ```sh
 npm ci
@@ -135,6 +135,6 @@ Current manual coverage gaps include fractional scaling, physical display remova
 
 ## Package for review
 
-Run `npm run pack:extension` to create `better-tiles@asdf-dev.github.io.shell-extension.zip` from a clean build. The package includes the compiled JavaScript modules, preferences, stylesheet, schema, metadata, and license. Run `npm run test:package`, then install that ZIP in a GNOME 51 desktop with `gnome-extensions install --force better-tiles@asdf-dev.github.io.shell-extension.zip` before uploading it to extensions.gnome.org. The extension does not download updates itself.
+Run `npm run pack:extension` to create `better-tiles@asdf-dev.github.io.shell-extension.zip` from a clean build. The package includes the compiled JavaScript modules, preferences, stylesheet, schema, metadata, and license. Run `npm run test:package` on a GNOME 50 host, then install that ZIP in a GNOME 50 desktop with `gnome-extensions install --force better-tiles@asdf-dev.github.io.shell-extension.zip` before publishing it. The extension does not download updates itself.
 
 Better Tiles is licensed under [GPL-3.0-or-later](LICENSE).

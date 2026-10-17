@@ -11,7 +11,9 @@ import time
 from zipfile import ZipFile
 
 root = Path(__file__).resolve().parent.parent
-uuid = json.loads((root / 'metadata.json').read_text())['uuid']
+metadata = json.loads((root / 'metadata.json').read_text())
+uuid = metadata['uuid']
+shell_version = metadata['shell-version'][0]
 session = root / '.test-session'
 if session.exists():
     shutil.rmtree(session)
@@ -35,7 +37,7 @@ else:
     shutil.copytree(root / 'dist', extensions / uuid)
 harness = extensions / 'better-tiles-test@local'
 harness.mkdir()
-(harness / 'metadata.json').write_text(json.dumps({'uuid':'better-tiles-test@local','name':'Better Tiles integration harness','description':'Private integration test','shell-version':['51']}))
+(harness / 'metadata.json').write_text(json.dumps({'uuid':'better-tiles-test@local','name':'Better Tiles integration harness','description':'Private integration test','shell-version':[shell_version]}))
 shutil.copy(root / 'tests/harness-extension.js', harness / 'extension.js')
 for schema, key, value in [
     ('org.gnome.shell','enabled-extensions',str([uuid, 'better-tiles-test@local'])),

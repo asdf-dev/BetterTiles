@@ -25,7 +25,7 @@ export default class Harness extends Extension {
             const actions=await import(`file://${root}/dist/actions.js`);
             check(global.display.get_n_monitors()===2,'Need two virtual monitors');
             check(!new Gio.Settings({schema_id:'org.gnome.mutter'}).get_boolean('edge-tiling'),'Native snapping not disabled');
-            passed.push('Extension loads on GNOME 51; takes ownership of built-in snapping');
+            passed.push('Extension loads; takes ownership of built-in snapping');
             const menuItems=()=>ext.indicator.menu._getMenuItems().map(item=>item.label?.text).filter(Boolean);
             check(JSON.stringify(menuItems())===JSON.stringify(['Center','Next Display','Previous Display','Preferences…']),`Unexpected panel menu: ${menuItems()}`);
             passed.push('Panel menu contains the window actions and preferences');

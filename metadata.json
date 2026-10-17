@@ -2,8 +2,8 @@
   "uuid": "better-tiles@asdf-dev.github.io",
   "name": "Better Tiles",
   "description": "Arrange windows with keyboard shortcuts, screen edges, and a simple panel menu.",
-  "shell-version": ["51"],
+  "shell-version": ["50"],
   "settings-schema": "org.gnome.shell.extensions.better-tiles",
   "url": "https://github.com/asdf-dev/BetterTiles",
-  "version-name": "0.1.0"
+  "version-name": "0.1.0 GNOME 50"
 }
