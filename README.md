@@ -2,6 +2,8 @@
 
 Better Tiles arranges application windows in GNOME Shell 51 on Wayland. Use keyboard shortcuts, drag a window to a screen edge, or choose an action from a small panel menu. It is inspired by Tiles, but is currently a local development build rather than a feature-for-feature replacement.
 
+This project was coded with the help of Codex.
+
 ## What it does
 
 - Tile windows into halves, quarters, thirds, or two-thirds of the usable screen area.
