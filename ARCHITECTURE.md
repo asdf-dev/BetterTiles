@@ -40,11 +40,11 @@ Undo and restore-on-drag use different snapshots during a drag. Undo remembers t
 
 `grab-op-begin` starts tracking an eligible moving window. A GLib timer samples the pointer, finds its physical monitor and active edge zone, applies the configured edge action or thirds modifier, and waits for the configured activation delay before showing a preview. Leaving the zone resets the candidate. Escape, overview entry, monitor changes, and extension shutdown cancel the preview.
 
-`grab-op-end` commits only when the current event is a pointer button release and an active candidate remains. It schedules `perform()` on the idle loop so Mutter can finish grab cleanup first. The pending idle source is tracked and removed on disable. A window's `unmanaged` signal removes its state and cancels its drag if needed.
+`grab-op-end` commits only when the current event is a pointer button release and an active candidate remains. It schedules `perform()` on the idle loop so Mutter can finish grab cleanup first. Pending idle sources are removed on disable, display changes, or a new grab. A window's `unmanaged` signal removes its state and cancels its drag if needed.
 
 ## Settings and lifecycle
 
-`enable()` creates settings, signals, the preview actor, shortcuts, and optionally the panel indicator. It temporarily disables GNOME's built-in edge tiling while Better Tiles snapping is enabled, recording whether it should restore that setting. Settings changes rebuild affected bindings or UI and cancel an in-progress drag when its snap rules change.
+`enable()` creates settings, signals, the preview actor, shortcuts, and optionally the panel indicator. It temporarily disables GNOME's built-in edge tiling while Better Tiles snapping is enabled, recording the prior user setting so it can restore the value or unset the override on disable. Settings changes rebuild affected bindings or UI and cancel an in-progress drag when its snap rules change.
 
 `disable()` stops drag and idle sources, disconnects signals, removes shortcuts and UI actors, clears window state, and restores GNOME edge tiling when this extension had disabled it. Keep every new signal, timer, actor, or binding paired with cleanup here. Do not retain a `Meta.Window` after its `unmanaged` signal.
 

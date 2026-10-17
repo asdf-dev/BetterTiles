@@ -26,7 +26,7 @@ export default class Harness extends Extension {
             check(global.display.get_n_monitors()===2,'Need two virtual monitors');
             check(!new Gio.Settings({schema_id:'org.gnome.mutter'}).get_boolean('edge-tiling'),'Native snapping not disabled');
             passed.push('Extension loads on GNOME 51; takes ownership of built-in snapping');
-            const menuItems=()=>ext.indicator.menu._getMenuItems().filter(item=>item.label).map(item=>item.label.text);
+            const menuItems=()=>ext.indicator.menu._getMenuItems().map(item=>item.label?.text).filter(Boolean);
             check(JSON.stringify(menuItems())===JSON.stringify(['Center','Next Display','Previous Display','Preferences…','Quit']),`Unexpected panel menu: ${menuItems()}`);
             passed.push('Panel menu contains only the requested actions, preferences, and Quit');
             this.process=Gio.Subprocess.new(['gjs','-m',`${root}/tests/test-window.js`], Gio.SubprocessFlags.NONE);
@@ -140,10 +140,16 @@ export default class Harness extends Extension {
             await fixture('x11',false); passed.push('XWayland window tiling');
             ext.disable(); await pause(100);
             check(ext.bindings.length===0&&ext.signals.length===0&&!ext.preview&&!ext.indicator&&!ext.dragTimer&&ext.pending.size===0,'Cleanup incomplete');
-            check(new Gio.Settings({schema_id:'org.gnome.mutter'}).get_boolean('edge-tiling'),'Native snapping not restored');
+            const nativeSettings=new Gio.Settings({schema_id:'org.gnome.mutter'});
+            check(nativeSettings.get_boolean('edge-tiling'),'Native snapping not restored');
+            nativeSettings.reset('edge-tiling');
+            check(nativeSettings.get_boolean('edge-tiling'),'Test requires native snapping to be enabled by default');
+            ext.enable(); await pause(100);
+            ext.disable(); await pause(100);
+            check(nativeSettings.get_user_value('edge-tiling')===null,'Native snapping left an explicit setting after disable');
             ext.enable(); await pause(150);
             check(ext.bindings.length===18,'Shortcuts not re-registered');
-            passed.push('Disable/re-enable removes resources and restores native snapping');
+            passed.push('Disable/re-enable removes resources and restores native snapping without changing its prior setting');
             this.process.force_exit();
             this.process=Gio.Subprocess.new(['gjs','-m',`${root}/tests/test-preferences.js`], Gio.SubprocessFlags.NONE);
             await pause(1500);

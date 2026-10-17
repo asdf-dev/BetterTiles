@@ -22,6 +22,7 @@ export default class BetterTiles extends Extension {
     private settings?: Gio.Settings;
     private nativeSettings?: Gio.Settings;
     private restoreNative = false;
+    private previousNativeValue?: GLib.Variant | null;
     private nativeSignal = 0;
     private settingsSignal = 0;
     private signals: [GObjectLike, number][] = [];
@@ -45,7 +46,11 @@ export default class BetterTiles extends Extension {
         Main.layoutManager.addChrome(this.preview);
         this.listen(global.display, 'grab-op-begin', (_display, window: Meta.Window, op: Meta.GrabOp) => this.beginDrag(window, op));
         this.listen(global.display, 'grab-op-end', () => this.endDrag());
-        this.listen(Main.layoutManager, 'monitors-changed', () => { this.cancelDrag(); this.clearWindows(); });
+        this.listen(Main.layoutManager, 'monitors-changed', () => {
+            this.cancelDrag();
+            this.cancelPendingActions();
+            this.clearWindows();
+        });
         this.listen(Main.overview, 'showing', () => this.cancelDrag());
         this.listen(global.stage, 'captured-event', (_stage, event: Clutter.Event) => {
             if (this.drag && event.type() === Clutter.EventType.KEY_PRESS && event.get_key_symbol() === Clutter.KEY_Escape) {
@@ -72,8 +77,7 @@ export default class BetterTiles extends Extension {
     disable(): void {
         this.active = false;
         this.cancelDrag();
-        for (const id of this.pending) GLib.Source.remove(id);
-        this.pending.clear();
+        this.cancelPendingActions();
         for (const [object, id] of this.signals) object.disconnect(id);
         this.signals = [];
         for (const name of this.bindings) Main.wm.removeKeybinding(name);
@@ -94,9 +98,15 @@ export default class BetterTiles extends Extension {
         this.signals.push([object, object.connect(signal, handler)]);
     }
 
+    private cancelPendingActions(): void {
+        for (const id of this.pending) GLib.Source.remove(id);
+        this.pending.clear();
+    }
+
     private configureNativeSnapping(): void {
         if (this.settings?.get_boolean('snap-enabled')) {
             if (this.nativeSettings?.get_boolean('edge-tiling')) {
+                this.previousNativeValue = this.nativeSettings.get_user_value('edge-tiling');
                 this.restoreNative = true;
                 this.nativeSettings.set_boolean('edge-tiling', false);
             }
@@ -104,9 +114,14 @@ export default class BetterTiles extends Extension {
     }
 
     private releaseNativeSnapping(): void {
-        if (this.restoreNative && !this.nativeSettings?.get_boolean('edge-tiling'))
-            this.nativeSettings?.set_boolean('edge-tiling', true);
+        if (this.restoreNative && !this.nativeSettings?.get_boolean('edge-tiling')) {
+            if (this.previousNativeValue)
+                this.nativeSettings?.set_value('edge-tiling', this.previousNativeValue);
+            else
+                this.nativeSettings?.reset('edge-tiling');
+        }
         this.restoreNative = false;
+        this.previousNativeValue = undefined;
     }
 
     private bindShortcuts(): void {
@@ -258,6 +273,7 @@ export default class BetterTiles extends Extension {
 
     private beginDrag(window: Meta.Window, op: Meta.GrabOp): void {
         this.cancelDrag();
+        this.cancelPendingActions();
         if (!this.settings?.get_boolean('snap-enabled') || (op !== Meta.GrabOp.MOVING && op !== Meta.GrabOp.MOVING_UNCONSTRAINED) || !this.eligible(window)
             || (!window.allows_resize() && !window.is_maximized()) || window.is_fullscreen()) return;
         const [x, y] = global.get_pointer();
