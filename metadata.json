@@ -1,0 +1,8 @@
+{
+  "uuid": "better-tiles@local",
+  "name": "Better Tiles",
+  "description": "Arrange windows with keyboard shortcuts, screen edges, and a simple panel menu.",
+  "shell-version": ["51"],
+  "settings-schema": "org.gnome.shell.extensions.better-tiles",
+  "version-name": "0.1.0"
+}

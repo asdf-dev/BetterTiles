@@ -1,0 +1,19 @@
+{
+  "name": "better-tiles",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiles-inspired window management for GNOME 51",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc && node scripts/build.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "test:gnome": "npm run build && python3 scripts/test-gnome.py",
+    "install:local": "npm run build && node scripts/install.mjs",
+    "prefs": "npm run build && gjs -m scripts/preferences.js"
+  },
+  "devDependencies": {
+    "@girs/gnome-shell": "^50.0.4",
+    "typescript": "^5.9.3"
+  }
+}
