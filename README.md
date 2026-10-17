@@ -77,6 +77,10 @@ If DevKit was already running when you installed or rebuilt Better Tiles, close 
 
    ![Better Tiles Snap to Edges preferences with a customized edge layout](docs/screenshots/snap-to-edges-tab.png)
 
+4. **Customize keyboard shortcuts** on **Hotkeys**. Select an action to record a combination, or press Backspace to clear it. This screenshot shows a custom setup with shortcuts cleared; the shipped defaults are listed below.
+
+   ![Better Tiles Hotkeys preferences showing actions with cleared shortcuts](docs/screenshots/hotkey-tab.png)
+
 ## Use Better Tiles
 
 ### Drag to an edge
